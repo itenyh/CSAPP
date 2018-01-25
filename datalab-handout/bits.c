@@ -139,7 +139,12 @@ NOTES:
  *   Rating: 1
  */
 int bitAnd(int x, int y) {
-  return 2;
+    
+    int fx = ~x;
+    int fy = ~y;
+    int rfxy = fx | fy;
+    return ~rfxy;
+    
 }
 /* 
  * getByte - Extract byte n from word x
@@ -165,9 +170,20 @@ int getByte(int x, int n) {
  *   Rating: 3 
  */
 int logicalShift(int x, int n) {
+    
     int shiftedX = x >> n;
-    int mask = ~((1 << 32) >> n);
+//    int mask = ~(~0 << (32 - n));
+    int mask = ~(((~0 << 31) >> n) << 1);
     return shiftedX & mask;
+    
+//    int mask;
+//    
+//    mask = ~(((1 << 31) >> n) << 1); // mask 0{n}1{32-n}
+//    
+//    x = (x >> n) & mask;
+//    
+//    return x;
+    
 }
 /*
  * bitCount - returns count of number of 1's in word
@@ -177,7 +193,17 @@ int logicalShift(int x, int n) {
  *   Rating: 4
  */
 int bitCount(int x) {
-  return 2;
+    
+    int count = 0;
+    int mask = 1;
+    
+    for (int j = 0; j < 32; j++) {
+        count += x & mask;
+        x = x >> 1;
+    }
+    
+    return count;
+    
 }
 /* 
  * bang - Compute !x without using !
@@ -187,7 +213,7 @@ int bitCount(int x) {
  *   Rating: 4 
  */
 int bang(int x) {
-  return 2;
+    return ~(x|(~x+1)) >> 31 & 1;
 }
 /* 
  * tmin - return minimum two's complement integer 
@@ -196,7 +222,7 @@ int bang(int x) {
  *   Rating: 1
  */
 int tmin(void) {
-  return 2;
+  return 1<<31;
 }
 /* 
  * fitsBits - return 1 if x can be represented as an 
@@ -208,7 +234,9 @@ int tmin(void) {
  *   Rating: 2
  */
 int fitsBits(int x, int n) {
-  return 2;
+//    return !logicalShift(x, n - 1);
+    int shift = 33 + ~n;
+    return !((x << shift >> shift) ^ x);
 }
 /* 
  * divpwr2 - Compute x/(2^n), for 0 <= n <= 30
@@ -219,7 +247,8 @@ int fitsBits(int x, int n) {
  *   Rating: 2
  */
 int divpwr2(int x, int n) {
-    return 2;
+    int shiftedBits = ~((1 << 31) >> (31 - n)) & x;
+    return (x >> n) + (((x >> 31) & 1) & !!shiftedBits);
 }
 /* 
  * negate - return -x 
@@ -229,7 +258,9 @@ int divpwr2(int x, int n) {
  *   Rating: 2
  */
 int negate(int x) {
-  return 2;
+    int t = ~x;
+    int q = t + 1;
+    return q;
 }
 /* 
  * isPositive - return 1 if x > 0, return 0 otherwise 
@@ -239,7 +270,7 @@ int negate(int x) {
  *   Rating: 3
  */
 int isPositive(int x) {
-  return 2;
+    return ~(x >> 31) & !!x;
 }
 /* 
  * isLessOrEqual - if x <= y  then return 1, else return 0 
@@ -249,7 +280,8 @@ int isPositive(int x) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
-  return 2;
+    int isSignDiff = ((x >> 31) ^ (y >> 31)) & 1;
+    return ((x >> 31) & isSignDiff) | (!isPositive(x + negate(y)) & !isSignDiff);
 }
 /*
  * ilog2 - return floor(log base 2 of x), where x > 0
@@ -259,7 +291,139 @@ int isLessOrEqual(int x, int y) {
  *   Rating: 4
  */
 int ilog2(int x) {
-  return 2;
+    
+    int position = 0;
+    int findOne = 0;
+    
+    position += !findOne;
+    findOne = x & 1;
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    x = x >> 1;
+    position += !findOne;
+    findOne = findOne | (x & 1);
+    
+    return position - 1;
+    
 }
 /* 
  * float_neg - Return bit-level equivalent of expression -f for
