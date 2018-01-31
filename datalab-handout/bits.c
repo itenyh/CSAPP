@@ -437,9 +437,19 @@ int ilog2(int x) {
  *   Rating: 2
  */
 unsigned float_neg(unsigned uf) {
-    //test1
-    //测试分支
- return 2;
+    
+    unsigned allOneExp = !(((uf >> 23) & 255) ^ 255);
+    unsigned notAllZeroFrac = !!(uf << 9);
+    unsigned returnOriginal = allOneExp & notAllZeroFrac;
+    unsigned k = uf ^ (1 << 31);
+    
+    if (returnOriginal) {
+        return uf;
+    }
+    else {
+        return k;
+    }
+    
 }
 /* 
  * float_i2f - Return bit-level equivalent of expression (float) x
