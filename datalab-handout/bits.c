@@ -438,12 +438,24 @@ int ilog2(int x) {
  */
 unsigned float_neg(unsigned uf) {
     
-    unsigned allOneExp = !(((uf >> 23) & 255) ^ 255);
-    unsigned notAllZeroFrac = !!(uf << 9);
-    unsigned returnOriginal = allOneExp & notAllZeroFrac;
-    unsigned k = uf ^ (1 << 31);
+//    unsigned allOneExp = !(((uf >> 23) & 255) ^ 255);
+//    unsigned notAllZeroFrac = !!(uf << 9);
+//    unsigned returnOriginal = allOneExp & notAllZeroFrac;
+//    unsigned k = uf ^ (1 << 31);
+//
+//    if (returnOriginal) {
+//        return uf;
+//    }
+//    else {
+//        return k;
+//    }
     
-    if (returnOriginal) {
+    int basic = (1 << 31);
+    int mask = (basic >> 8) ^ basic;
+    int positiveUf = uf & ~basic;
+    int k = uf ^ basic;
+    
+    if (positiveUf ^ mask & 255) {
         return uf;
     }
     else {
