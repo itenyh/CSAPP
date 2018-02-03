@@ -292,137 +292,7 @@ int isLessOrEqual(int x, int y) {
  */
 int ilog2(int x) {
     
-    int position = 0;
-    int findOne = 0;
-    
-    position += !findOne;
-    findOne = x & 1;
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    x = x >> 1;
-    position += !findOne;
-    findOne = findOne | (x & 1);
-    
-    return position - 1;
+    return 2;
     
 }
 /* 
@@ -461,7 +331,52 @@ unsigned float_neg(unsigned uf) {
  *   Rating: 4
  */
 unsigned float_i2f(int x) {
-  return 2;
+  
+    if (!x) { return 0; }
+    if (!((1 << 31) ^ x)) { return 0xcf000000; }
+    
+    int isPositive = (x >> 31) + 1;
+    int newX = x;
+    if (!isPositive) { newX = ~x + 1; }
+    
+    int temp = newX;
+    int E = -1;
+    while (temp != 0) {
+        temp = temp >> 1;
+        E = E + 1;
+    }
+    
+    int exp = (E + 127) << 23;
+    int frac = logicalShift(newX << (32 - E), 9);
+    int roundedPartLengh = 9 - (32 - E);
+    int rounded = roundedPartLengh > 0;
+    int S = (!isPositive << 31);
+    
+    int result = (exp + frac) | S;
+    
+    if (rounded) {
+        
+        int roundedFrac = ~((1 << 31) >> (31 - roundedPartLengh)) & newX;
+        int roundedFracMiddle = 1 << (roundedPartLengh - 1);
+        if (roundedFrac > roundedFracMiddle) {
+            return result + 1;
+        }
+        else if (roundedFrac < roundedFracMiddle) {
+            return result;
+        }
+        else {
+            if (1 & result) {
+                return result + 1;
+            }
+            else {
+                return result;
+            }
+        }
+    }
+    else {
+        return (exp + frac) | S;
+    }
+    
 }
 /* 
  * float_twice - Return bit-level equivalent of expression 2*f for
