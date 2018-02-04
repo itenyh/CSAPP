@@ -344,50 +344,39 @@ unsigned float_neg(unsigned uf) {
  */
 unsigned float_i2f(int x) {
   
+    int TMin = 0x80000000;
     if (!x) { return 0; }
-    if (!((1 << 31) ^ x)) { return 0xcf000000; }
+    if (TMin == x) { return 0xcf000000; }
     
-    int isPositive = (x >> 31) + 1;
-    int newX = x;
-    if (!isPositive) { newX = ~x + 1; }
+    int isPositive = !(TMin & x);
+    if (!isPositive) { x = ~x + 1; }
     
-    int temp = newX;
-    int E = -1;
-    while (temp != 0) {
-        temp = temp >> 1;
-        E = E + 1;
+    int E = 31;
+    while (1) {
+        if (x & TMin) { break; }
+        E--;
+        x = x << 1;
     }
     
     int exp = (E + 127) << 23;
-    int frac = logicalShift(newX << (32 - E), 9);
-    int roundedPartLengh = 9 - (32 - E);
-    int rounded = roundedPartLengh > 0;
+    int frac = (x >> 8) & 0x007fffff;
     int S = (!isPositive << 31);
+    int result = S | exp | frac;
     
-    int result = (exp + frac) | S;
-    
-    if (rounded) {
-        
-        int roundedFrac = ~((1 << 31) >> (31 - roundedPartLengh)) & newX;
-        int roundedFracMiddle = 1 << (roundedPartLengh - 1);
+        int roundedFrac = 0xff & x;
+        int roundedFracMiddle = 0x80;
         if (roundedFrac > roundedFracMiddle) {
             return result + 1;
         }
         else if (roundedFrac < roundedFracMiddle) {
             return result;
         }
-        else {
-            if (1 & result) {
-                return result + 1;
-            }
-            else {
-                return result;
-            }
+        else if (1 & result) {
+            return result + 1;
         }
-    }
-    else {
-        return (exp + frac) | S;
-    }
+        else {
+            return result;
+        }
     
 }
 /* 
@@ -402,5 +391,16 @@ unsigned float_i2f(int x) {
  *   Rating: 4
  */
 unsigned float_twice(unsigned uf) {
-  return 2;
+
+    // 若是指数为0情况
+    if((uf & 0x7F800000) == 0)
+        return (uf << 1) | (0x80000000 & uf);//特殊情况0x80000000
+    //若数为NaN
+    else if((uf & 0x7fffffff) >= 0x7f800000)
+        return uf;
+    return uf + 0x00800000;
+    
 }
+
+//比较好的解答：
+//https://elegenthus.github.io/post/Manipulating%20Bits/
